@@ -28,6 +28,16 @@ namespace FAHPApp.ViewModels
         // 旧 UI 互換用 (未使用になっても既存コードへの影響を避ける)
         public ObservableCollection<AlternativeComparisonEntry> Comparisons { get; } = new();
 
+        /// <summary>
+        /// 当該基準に対する候補間比較行列の一貫性比率 (CR)。
+        /// </summary>
+        private double _consistencyRatio;
+        public double ConsistencyRatio
+        {
+            get => _consistencyRatio;
+            set => SetProperty(ref _consistencyRatio, value);
+        }
+
         private static DataView BuildAlternativeMatrix(string[] alternatives)
         {
             var table = new DataTable();

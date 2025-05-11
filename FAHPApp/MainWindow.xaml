@@ -68,9 +68,14 @@
                 <!-- タブコンテンツ -->
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <DataGrid ItemsSource="{Binding AlternativeMatrix}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="False"
-                                  HeadersVisibility="Column" CanUserSortColumns="False" AutoGeneratingColumn="AltMatrix_AutoGeneratingColumn"
-                                  BeginningEdit="AltMatrix_BeginningEdit" />
+                        <StackPanel>
+                            <DataGrid ItemsSource="{Binding AlternativeMatrix}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                                      HeadersVisibility="Column" CanUserSortColumns="False" AutoGeneratingColumn="AltMatrix_AutoGeneratingColumn"
+                                      BeginningEdit="AltMatrix_BeginningEdit" />
+
+                            <TextBlock Margin="0,5,0,0" FontWeight="Bold"
+                                       Text="{Binding ConsistencyRatio, StringFormat=一貫性比率 (CR): {0:0.####}}" />
+                        </StackPanel>
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>
@@ -96,12 +101,17 @@
 
         <!-- 8. 候補スコア結果 -->
         <GroupBox Grid.Row="7" Header="候補の総合スコア">
-            <DataGrid ItemsSource="{Binding AlternativeResults}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Alternative" Binding="{Binding Alternative}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Score" Binding="{Binding Score}" IsReadOnly="True"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel>
+                <DataGrid ItemsSource="{Binding AlternativeResults}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" CanUserSortColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Alternative" Binding="{Binding Alternative}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Score" Binding="{Binding Score}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Margin="0,5,0,0" FontWeight="Bold"
+                           Text="{Binding AlternativeConsistencyRatio, StringFormat=統合一貫性比率 (CR): {0:0.####}}" />
+            </StackPanel>
         </GroupBox>
     </Grid>
 </Window>

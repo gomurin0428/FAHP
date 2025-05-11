@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FAHPApp.ViewModels;
+using System.Linq;
 
 namespace FAHPApp
 {
@@ -158,7 +159,23 @@ namespace FAHPApp
             {
                 return "(5,5,5)";
             }
-            return $"({l:0.###},{m:0.###},{u:0.###})";
+
+            static int RatioToNearestLevel(double ratio)
+            {
+                int[] levels = { 1, 3, 5, 7, 9 };
+                // ベースは 2 とする (LevelToRatio と同じ)
+                double LevelToRatio(int lvl) => Math.Pow(2.0, (lvl - 5) / 2.0);
+                return levels
+                    .Select(lvl => new { Level = lvl, Ratio = LevelToRatio(lvl) })
+                    .OrderBy(x => Math.Abs(x.Ratio - ratio))
+                    .First().Level;
+            }
+
+            int lLvl = RatioToNearestLevel(l);
+            int mLvl = RatioToNearestLevel(m);
+            int uLvl = RatioToNearestLevel(u);
+
+            return $"({lLvl},{mLvl},{uLvl})";
         }
     }
 }

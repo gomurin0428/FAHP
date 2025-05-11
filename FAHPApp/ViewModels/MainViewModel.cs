@@ -69,6 +69,14 @@ namespace FAHPApp.ViewModels
             private set => SetProperty(ref _criteriaConsistencyRatio, value);
         }
 
+        // 追加: 候補スコア全体の一貫性比率 (各基準 CR を重み付き平均)
+        private double _alternativeConsistencyRatio;
+        public double AlternativeConsistencyRatio
+        {
+            get => _alternativeConsistencyRatio;
+            private set => SetProperty(ref _alternativeConsistencyRatio, value);
+        }
+
         private RelayCommand? _generateComparisonsCommand;
         public RelayCommand GenerateComparisonsCommand => _generateComparisonsCommand ??= new RelayCommand(GenerateComparisons, CanGenerate);
 
@@ -139,6 +147,7 @@ namespace FAHPApp.ViewModels
             _computeCommand?.RaiseCanExecuteChanged();
 
             CriteriaConsistencyRatio = 0.0;
+            AlternativeConsistencyRatio = 0.0;
         }
 
         private void ComputeScores()
@@ -182,6 +191,7 @@ namespace FAHPApp.ViewModels
 
             // --- 2. 候補行列（基準ごと）作成 ---
             var altMatrices = new TriangularFuzzyNumber[n][,];
+            var altCrArray = new double[n];
             for (int k = 0; k < n; k++)
             {
                 var mat = new TriangularFuzzyNumber[m, m];
@@ -208,12 +218,25 @@ namespace FAHPApp.ViewModels
                 }
 
                 altMatrices[k] = mat;
+
+                // 一貫性比率 (CR) を計算し、タブ ViewModel へ反映
+                double altCr = FuzzyAHPProcessor.CalculateConsistencyRatio(mat);
+                AlternativeComparisonTabs[k].ConsistencyRatio = Math.Round(altCr, 4);
+                altCrArray[k] = altCr;
             }
 
             // --- 3. 計算 ---
             var criteriaWeights = FuzzyAHPProcessor.CalculateWeights(criteriaMatrix);
             var cr = FuzzyAHPProcessor.CalculateConsistencyRatio(criteriaMatrix);
             CriteriaConsistencyRatio = Math.Round(cr, 4);
+
+            // 3.1 候補側 CR の統合 (重み付き平均)
+            double altCrIntegrated = 0.0;
+            for (int k = 0; k < n; k++)
+            {
+                altCrIntegrated += criteriaWeights[k] * altCrArray[k];
+            }
+            AlternativeConsistencyRatio = Math.Round(altCrIntegrated, 4);
 
             var scores = FuzzyAHPProcessor.CalculateAlternativeScores(criteriaMatrix, altMatrices);
 

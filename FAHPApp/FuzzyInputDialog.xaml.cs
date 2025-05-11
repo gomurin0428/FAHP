@@ -114,11 +114,24 @@ namespace FAHPApp
                     // 端数がある場合は四捨五入して文字列化
                     if (double.TryParse(mid, out var mVal))
                     {
-                        // 中央値から最も近いレベルを返す
-                        int[] levels = { 1, 3, 5, 7, 9 };
-                        int nearest = levels.OrderBy(lvl => Math.Abs(lvl - mVal)).First();
-                        return nearest.ToString();
-                    }
+                        // mVal がレベル値 (1,3,5,7,9) に近い場合はそのレベルを採用
+                        int[] levelSet = { 1, 3, 5, 7, 9 };
+                        foreach (var lvl in levelSet)
+                        {
+                            if (Math.Abs(mVal - lvl) < 0.001)
+                            {
+                                return lvl.ToString();
+                            }
+                        }
+
+                         // 比率値 -> レベル変換 (最も近い比率を持つレベルを選択)
+                         int[] levels = { 1, 3, 5, 7, 9 };
+                         int nearest = levels
+                             .Select(lvl => new { Level = lvl, Ratio = LevelToRatio(lvl) })
+                             .OrderBy(x => Math.Abs(x.Ratio - mVal))
+                             .First().Level;
+                         return nearest.ToString();
+                     }
                 }
             }
             // 直接数値の場合

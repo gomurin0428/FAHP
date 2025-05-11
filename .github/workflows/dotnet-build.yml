@@ -1,0 +1,35 @@
+name: Build FAHPApp
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 8.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore FAHPApp/FAHPApp.csproj
+
+      - name: Build (Release)
+        run: dotnet build FAHPApp/FAHPApp.csproj --configuration Release --no-restore
+
+      - name: Publish self-contained
+        run: dotnet publish FAHPApp/FAHPApp.csproj --configuration Release --no-build --output ./publish --self-contained false
+
+      - name: Upload artifact (published app)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FAHPApp_publish
+          path: ./publish/** 

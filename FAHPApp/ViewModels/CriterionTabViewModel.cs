@@ -44,7 +44,7 @@ namespace FAHPApp.ViewModels
                 row["Alternative"] = alternatives[i];
                 for (int j = 0; j < alternatives.Length; j++)
                 {
-                    row[alternatives[j]] = "1"; // 初期値
+                    row[alternatives[j]] = "(1,1,1)"; // 初期値
                 }
                 table.Rows.Add(row);
             }

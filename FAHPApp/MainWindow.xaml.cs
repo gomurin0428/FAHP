@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,6 +24,12 @@ namespace FAHPApp
             "9", "7", "5", "3", "1", "1/3", "1/5", "1/7", "1/9"
         };
 
+        // 信頼度（スプレッド幅）の選択肢 (対称 ±delta)
+        private static readonly double[] _confidenceOptions =
+        {
+            0.0, 0.25, 0.5, 0.75, 1.0
+        };
+
         public MainWindow()
         {
             InitializeComponent();
@@ -38,18 +45,18 @@ namespace FAHPApp
                 return;
             }
 
-            // それ以外はコンボボックス列に置き換える
-            var combo = new DataGridComboBoxColumn
+            // それ以外のセルは文字列を表示 (ファジィ数 "(l,m,u)" 表示) させるため、デフォルト列をそのまま利用する。
+            // ユーザー編集は BeginningEdit でインターセプトし、独自ダイアログを表示する。
+            if (e.Column is DataGridTextColumn textCol)
             {
-                Header = e.Column.Header,
-                ItemsSource = _scaleOptions,
-                SelectedItemBinding = new Binding(e.PropertyName)
+                textCol.IsReadOnly = false; // 編集自体は BeginEdit でキャンセルする
+                textCol.Binding = new Binding(e.PropertyName)
                 {
                     Mode = BindingMode.TwoWay,
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                }
-            };
-            e.Column = combo;
+                };
+            }
+            return;
         }
 
         private void AltMatrix_AutoGeneratingColumn(object? sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -60,17 +67,16 @@ namespace FAHPApp
                 return;
             }
 
-            var combo = new DataGridComboBoxColumn
+            if (e.Column is DataGridTextColumn textCol)
             {
-                Header = e.Column.Header,
-                ItemsSource = _scaleOptions,
-                SelectedItemBinding = new Binding(e.PropertyName)
+                textCol.IsReadOnly = false;
+                textCol.Binding = new Binding(e.PropertyName)
                 {
                     Mode = BindingMode.TwoWay,
                     UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                }
-            };
-            e.Column = combo;
+                };
+            }
+            return;
         }
 
         /// <summary>
@@ -86,6 +92,27 @@ namespace FAHPApp
             if (colIndex <= rowIndex)
             {
                 e.Cancel = true;
+                return;
+            }
+
+            // デフォルト編集をキャンセルし、ダイアログを表示
+            e.Cancel = true;
+
+            // 対象セルを取得
+            if (sender is not DataGrid grid) return;
+            if (grid.Items[rowIndex] is not System.Data.DataRowView rowView) return;
+            string columnName = e.Column.Header?.ToString() ?? string.Empty;
+
+            string? currentVal = rowView.Row[columnName]?.ToString();
+
+            var dlg = new FuzzyInputDialog(_scaleOptions, _confidenceOptions, currentVal)
+            {
+                Owner = this
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                var (l, m, u) = dlg.ToTriangular();
+                rowView.Row[columnName] = $"({l:0.###},{m:0.###},{u:0.###})";
             }
         }
 
@@ -99,6 +126,22 @@ namespace FAHPApp
             if (colIndex <= rowIndex)
             {
                 e.Cancel = true;
+                return;
+            }
+
+            e.Cancel = true;
+            if (sender is not DataGrid grid) return;
+            if (grid.Items[rowIndex] is not System.Data.DataRowView rowView) return;
+            string columnName = e.Column.Header?.ToString() ?? string.Empty;
+            string? currentVal = rowView.Row[columnName]?.ToString();
+            var dlg = new FuzzyInputDialog(_scaleOptions, _confidenceOptions, currentVal)
+            {
+                Owner = this
+            };
+            if (dlg.ShowDialog() == true)
+            {
+                var (l, m, u) = dlg.ToTriangular();
+                rowView.Row[columnName] = $"({l:0.###},{m:0.###},{u:0.###})";
             }
         }
     }

@@ -244,7 +244,7 @@ namespace FAHPApp.ViewModels
 
                 for (int j = 0; j < criteria.Length; j++)
                 {
-                    row[criteria[j]] = "1"; // 既定は 1
+                    row[criteria[j]] = "(1,1,1)"; // 既定は 1 (ファジィ表記)
                 }
 
                 table.Rows.Add(row);
@@ -259,6 +259,20 @@ namespace FAHPApp.ViewModels
         private static TriangularFuzzyNumber ParseScaleToTFN(string? raw)
         {
             string text = (raw ?? "1").Trim();
+
+            // 1. (l,m,u) 形式の場合
+            if (text.StartsWith("(") && text.EndsWith(")") && text.Count(c => c == ',') == 2)
+            {
+                var inner = text.Trim('(', ')');
+                var parts = inner.Split(',');
+                if (parts.Length == 3 &&
+                    double.TryParse(parts[0].Trim(), out var lVal) &&
+                    double.TryParse(parts[1].Trim(), out var mVal) &&
+                    double.TryParse(parts[2].Trim(), out var uVal))
+                {
+                    return new TriangularFuzzyNumber(lVal, mVal, uVal);
+                }
+            }
 
             double value;
             if (text.Contains('/'))

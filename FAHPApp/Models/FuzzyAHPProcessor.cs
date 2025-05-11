@@ -201,5 +201,17 @@ namespace FAHPApp.Models
             15 => 1.59,
             _ => 1.59 // n>15 はおおよそ 1.59 とみなす
         };
+
+        public static double[] CalculateTopsisScores(
+            TriangularFuzzyNumber[,] criteriaMatrix,
+            double[,] decisionMatrix,
+            bool[]? isBenefit = null)
+        {
+            // 1. FAHP で基準重み (クリスプ) を計算
+            var weights = CalculateWeights(criteriaMatrix);
+
+            // 2. TOPSIS で代替案スコアを計算
+            return CrispTOPSISProcessor.CalculateScores(decisionMatrix, weights, isBenefit);
+        }
     }
 } 

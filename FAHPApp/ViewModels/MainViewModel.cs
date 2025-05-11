@@ -238,7 +238,21 @@ namespace FAHPApp.ViewModels
             }
             AlternativeConsistencyRatio = Math.Round(altCrIntegrated, 4);
 
-            var scores = FuzzyAHPProcessor.CalculateAlternativeScores(criteriaMatrix, altMatrices);
+            // --- 4. TOPSIS 用決定行列を構築 (列: 基準, 行: 代替案) ---
+            var decisionMatrix = new double[m, n];
+            for (int k = 0; k < n; k++)
+            {
+                // 各基準ごとに候補重み (altWeights) を計算
+                var altWeights = FuzzyAHPProcessor.CalculateWeights(altMatrices[k]); // m 要素
+
+                for (int j = 0; j < m; j++)
+                {
+                    decisionMatrix[j, k] = altWeights[j];
+                }
+            }
+
+            // --- 5. TOPSIS により相対近さ係数 (Closeness) を計算 ---
+            var closeness = CrispTOPSISProcessor.CalculateScores(decisionMatrix, criteriaWeights);
 
             // 結果を ViewModel へ反映
             for (int i = 0; i < n; i++)
@@ -255,7 +269,7 @@ namespace FAHPApp.ViewModels
                 AlternativeResults.Add(new AlternativeScoreViewModel
                 {
                     Alternative = alternatives[j],
-                    Score = Math.Round(scores[j], 4)
+                    Score = Math.Round(closeness[j], 4)
                 });
             }
         }

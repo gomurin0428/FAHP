@@ -115,6 +115,31 @@ namespace FAHPApp
             {
                 var (l, m, u) = dlg.ToTriangular();
                 rowView.Row[columnName] = FormatTriangularForDisplay(l, m, u);
+
+                // ここから追加: 対称セルも同時に更新する
+                {
+                    // 編集行の行ヘッダー (基準名) を取得
+                    if (rowView.Row.Table.Columns.Contains("Criterion"))
+                    {
+                        string rowHeader = rowView.Row["Criterion"]?.ToString() ?? string.Empty;
+                        if (!string.IsNullOrEmpty(rowHeader))
+                        {
+                            // 対象テーブル
+                            DataTable tbl = rowView.Row.Table;
+                            // 列ヘッダー (= columnName) に対応する行を探す
+                            DataRow? symmetricRow = tbl.AsEnumerable()
+                                                       .FirstOrDefault(r => (r["Criterion"]?.ToString() ?? string.Empty) == columnName);
+                            if (symmetricRow is not null)
+                            {
+                                // 逆数側の三角形ファジィ数文字列を作成し代入
+                                double rl = 1.0 / u;
+                                double rm = 1.0 / m;
+                                double ru = 1.0 / l;
+                                symmetricRow[rowHeader] = FormatTriangularForDisplay(rl, rm, ru);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -144,6 +169,28 @@ namespace FAHPApp
             {
                 var (l, m, u) = dlg.ToTriangular();
                 rowView.Row[columnName] = FormatTriangularForDisplay(l, m, u);
+
+                // ここから追加: 対称セルも同時に更新する
+                {
+                    // 編集行の行ヘッダー (基準名) を取得
+                    if (rowView.Row.Table.Columns.Contains("Alternative"))
+                    {
+                        string rowHeader = rowView.Row["Alternative"]?.ToString() ?? string.Empty;
+                        if (!string.IsNullOrEmpty(rowHeader))
+                        {
+                            DataTable tbl = rowView.Row.Table;
+                            DataRow? symmetricRow = tbl.AsEnumerable()
+                                                       .FirstOrDefault(r => (r["Alternative"]?.ToString() ?? string.Empty) == columnName);
+                            if (symmetricRow is not null)
+                            {
+                                double rl = 1.0 / u;
+                                double rm = 1.0 / m;
+                                double ru = 1.0 / l;
+                                symmetricRow[rowHeader] = FormatTriangularForDisplay(rl, rm, ru);
+                            }
+                        }
+                    }
+                }
             }
         }
 

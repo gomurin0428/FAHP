@@ -1,5 +1,8 @@
 # FAHP 評価ツール  ユーザーガイド
 
+![image](https://github.com/user-attachments/assets/bb3f9965-d438-403c-a778-0f8156e71410)
+
+
 このドキュメントは **FAHPApp**（ファジィ AHP + TOPSIS 評価ツール）の使い方を、エンドユーザー視点でまとめたものです。
 
 > Chang の拡張シンセティック法と三角形ファジィ数 (TFN) を採用し、意思決定の重み付けと候補評価を手早く行えます。

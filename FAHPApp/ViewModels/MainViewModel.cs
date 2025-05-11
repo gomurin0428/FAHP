@@ -244,7 +244,7 @@ namespace FAHPApp.ViewModels
 
                 for (int j = 0; j < criteria.Length; j++)
                 {
-                    row[criteria[j]] = "(1,1,1)"; // 既定は 1 (ファジィ表記)
+                    row[criteria[j]] = "(5,5,5)"; // 既定は 等しい (レベル5)
                 }
 
                 table.Rows.Add(row);
@@ -270,6 +270,18 @@ namespace FAHPApp.ViewModels
                     double.TryParse(parts[1].Trim(), out var mVal) &&
                     double.TryParse(parts[2].Trim(), out var uVal))
                 {
+                    // レベル値 (1,3,5,7,9) で入力されている場合は比率へ変換
+                    bool IsLevel(double v) => Math.Abs(v - 1) < 0.0001 || Math.Abs(v - 3) < 0.0001 || Math.Abs(v - 5) < 0.0001 || Math.Abs(v - 7) < 0.0001 || Math.Abs(v - 9) < 0.0001;
+
+                    if (IsLevel(lVal) && IsLevel(mVal) && IsLevel(uVal))
+                    {
+                        static double LevelToRatio(double level, double @base = 2.0)
+                            => Math.Pow(@base, (level - 5.0) / 2.0);
+
+                        return new TriangularFuzzyNumber(LevelToRatio(lVal), LevelToRatio(mVal), LevelToRatio(uVal));
+                    }
+
+                    // それ以外はそのまま比率値とみなす
                     return new TriangularFuzzyNumber(lVal, mVal, uVal);
                 }
             }

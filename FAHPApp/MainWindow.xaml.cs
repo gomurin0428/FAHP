@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,16 +19,16 @@ namespace FAHPApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        // コンボボックスに表示するスケール候補
+        // ユーザーに提示するレベル選択肢（1,3,5,7,9）※逆数は UI では入力させない
         private static readonly string[] _scaleOptions =
         {
-            "9", "7", "5", "3", "1", "1/3", "1/5", "1/7", "1/9"
+            "9", "7", "5", "3", "1"
         };
 
-        // 信頼度（スプレッド幅）の選択肢 (対称 ±delta)
+        // デルタ（信頼幅）候補 (0〜0.75)。±δ を乗算する相対幅として扱う
         private static readonly double[] _confidenceOptions =
         {
-            0.0, 0.25, 0.5, 0.75, 1.0
+            0.0, 0.25, 0.5, 0.75
         };
 
         public MainWindow()
@@ -112,7 +113,7 @@ namespace FAHPApp
             if (dlg.ShowDialog() == true)
             {
                 var (l, m, u) = dlg.ToTriangular();
-                rowView.Row[columnName] = $"({l:0.###},{m:0.###},{u:0.###})";
+                rowView.Row[columnName] = FormatTriangularForDisplay(l, m, u);
             }
         }
 
@@ -141,8 +142,23 @@ namespace FAHPApp
             if (dlg.ShowDialog() == true)
             {
                 var (l, m, u) = dlg.ToTriangular();
-                rowView.Row[columnName] = $"({l:0.###},{m:0.###},{u:0.###})";
+                rowView.Row[columnName] = FormatTriangularForDisplay(l, m, u);
             }
+        }
+
+        /// <summary>
+        /// 比率値の三角形ファジィ数を UI 表示用文字列に変換します。
+        /// (1,1,1) の場合は (5,5,5) と表示。
+        /// </summary>
+        private static string FormatTriangularForDisplay(double l, double m, double u)
+        {
+            bool approxEqual(double a, double b) => Math.Abs(a - b) < 1e-6;
+
+            if (approxEqual(l, 1.0) && approxEqual(m, 1.0) && approxEqual(u, 1.0))
+            {
+                return "(5,5,5)";
+            }
+            return $"({l:0.###},{m:0.###},{u:0.###})";
         }
     }
 }

@@ -129,5 +129,77 @@ namespace FAHPApp.Models
             }
             return scores;
         }
+
+        /// <summary>
+        /// デファジィ化（重心法）後の行列を用いて一貫性比率 (Consistency Ratio; CR) を計算します。
+        /// Saaty の CI/CR 定義に基づきます。
+        /// </summary>
+        /// <param name="matrix">n×n のペアワイズ比較行列 (TriangularFuzzyNumber)。</param>
+        /// <returns>CR 値。n &lt; 3 の場合は 0 を返します。</returns>
+        public static double CalculateConsistencyRatio(TriangularFuzzyNumber[,] matrix)
+        {
+            int n = matrix.GetLength(0);
+            if (n != matrix.GetLength(1))
+                throw new ArgumentException("行列は正方でなければなりません。", nameof(matrix));
+
+            if (n < 3) return 0.0;
+
+            // 1. デファジィ化したクリスプ行列 A を作成
+            var a = new double[n, n];
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    a[i, j] = matrix[i, j].Defuzzify();
+                }
+            }
+
+            // 2. 幾何平均法で固有ベクトル w を近似
+            var w = new double[n];
+            for (int i = 0; i < n; i++)
+            {
+                double prod = 1.0;
+                for (int j = 0; j < n; j++) prod *= a[i, j];
+                w[i] = Math.Pow(prod, 1.0 / n);
+            }
+            double sumW = w.Sum();
+            for (int i = 0; i < n; i++) w[i] /= sumW;
+
+            // 3. λ_max を推定: λ_i = (A * w)_i / w_i
+            double lambdaSum = 0.0;
+            for (int i = 0; i < n; i++)
+            {
+                double rowDot = 0.0;
+                for (int j = 0; j < n; j++) rowDot += a[i, j] * w[j];
+                lambdaSum += rowDot / w[i];
+            }
+            double lambdaMax = lambdaSum / n;
+
+            // 4. CI, CR
+            double ci = (lambdaMax - n) / (n - 1);
+            double ri = GetRandomIndex(n);
+            return ri <= 0 ? 0.0 : ci / ri;
+        }
+
+        // Saaty のランダム指数 (RI) – n = 1..15
+        private static double GetRandomIndex(int n) => n switch
+        {
+            1 => 0.0,
+            2 => 0.0,
+            3 => 0.58,
+            4 => 0.90,
+            5 => 1.12,
+            6 => 1.24,
+            7 => 1.32,
+            8 => 1.41,
+            9 => 1.45,
+            10 => 1.49,
+            11 => 1.51,
+            12 => 1.48,
+            13 => 1.56,
+            14 => 1.57,
+            15 => 1.59,
+            _ => 1.59 // n>15 はおおよそ 1.59 とみなす
+        };
     }
 } 

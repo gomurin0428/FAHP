@@ -81,12 +81,17 @@
 
         <!-- 7. 基準重み結果 -->
         <GroupBox Grid.Row="6" Header="基準の重み">
-            <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Criterion" Binding="{Binding Criterion}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Weight" Binding="{Binding Weight}" IsReadOnly="True"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel>
+                <DataGrid ItemsSource="{Binding Results}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" CanUserSortColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Criterion" Binding="{Binding Criterion}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Weight" Binding="{Binding Weight}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Margin="0,5,0,0" FontWeight="Bold"
+                           Text="{Binding CriteriaConsistencyRatio, StringFormat=一貫性比率 (CR): {0:0.####}}" />
+            </StackPanel>
         </GroupBox>
 
         <!-- 8. 候補スコア結果 -->

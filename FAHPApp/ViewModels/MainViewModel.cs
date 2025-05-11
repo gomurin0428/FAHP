@@ -59,6 +59,16 @@ namespace FAHPApp.ViewModels
         public ObservableCollection<WeightResultViewModel> Results { get; } = new();
         public ObservableCollection<AlternativeScoreViewModel> AlternativeResults { get; } = new();
 
+        private double _criteriaConsistencyRatio;
+        /// <summary>
+        /// デファジィ化行列に基づく一貫性比率 (CR)。UI へ表示する。
+        /// </summary>
+        public double CriteriaConsistencyRatio
+        {
+            get => _criteriaConsistencyRatio;
+            private set => SetProperty(ref _criteriaConsistencyRatio, value);
+        }
+
         private RelayCommand? _generateComparisonsCommand;
         public RelayCommand GenerateComparisonsCommand => _generateComparisonsCommand ??= new RelayCommand(GenerateComparisons, CanGenerate);
 
@@ -127,6 +137,8 @@ namespace FAHPApp.ViewModels
             }
 
             _computeCommand?.RaiseCanExecuteChanged();
+
+            CriteriaConsistencyRatio = 0.0;
         }
 
         private void ComputeScores()
@@ -200,6 +212,8 @@ namespace FAHPApp.ViewModels
 
             // --- 3. 計算 ---
             var criteriaWeights = FuzzyAHPProcessor.CalculateWeights(criteriaMatrix);
+            var cr = FuzzyAHPProcessor.CalculateConsistencyRatio(criteriaMatrix);
+            CriteriaConsistencyRatio = Math.Round(cr, 4);
 
             var scores = FuzzyAHPProcessor.CalculateAlternativeScores(criteriaMatrix, altMatrices);
 

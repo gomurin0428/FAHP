@@ -14,23 +14,23 @@
     <main>
         <section class="input-section">
             <div class="input-block">
-                <h2>① 基準入力</h2>
+                <h2>① 基準入力(例えば、コスト、所要時間)</h2>
                 <textarea id="criteriaInput" rows="5" placeholder="1 行に 1 つ入力してください"></textarea>
             </div>
             <div class="input-block">
-                <h2>② 候補入力</h2>
+                <h2>② 候補入力(例えば、タクシー、バス、電車)</h2>
                 <textarea id="altInput" rows="5" placeholder="1 行に 1 つ入力してください"></textarea>
             </div>
             <button id="generateBtn">③ ペア比較を生成</button>
         </section>
 
         <section id="criteriaMatrixSection" class="matrix-section">
-            <h2>④ 基準間比較行列</h2>
+            <h2>④ 基準間比較行列(黄色のみ入力可能。例えば、コストと所要時間の比較。行の要素が列の要素より優れていたら9を選ぶイメージです。)</h2>
             <div id="criteriaMatrixContainer"></div>
         </section>
 
         <section id="altMatricesSection" class="matrix-section">
-            <h2>⑤ 候補比較 (基準ごと)</h2>
+            <h2>⑤ 候補比較 (基準ごと)(黄色のみ入力可能。例えば、コストという面で見たときのタクシー、バス、電車の比較。選び方は基準間比較行列と同じです。)</h2>
             <div id="altMatricesContainer"></div>
         </section>
 

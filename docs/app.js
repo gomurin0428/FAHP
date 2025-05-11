@@ -91,25 +91,29 @@ function ratioToNearestLevel(ratio) {
     let nearest = levelOptions[0];
     let minDiff = Infinity;
     for (const lvl of levelOptions) {
-        const diff = Math.abs(levelToRatio(lvl) - ratio);
+        const lvlRatio = levelToRatio(lvl);
+        const diff = Math.abs(lvlRatio - ratio);
         if (diff < minDiff - 1e-9) {
             minDiff = diff;
             nearest = lvl;
-        } else if (Math.abs(diff - minDiff) < 1e-9 && lvl > nearest) {
-            // 同距離の場合はより大きいレベルを選択
-            nearest = lvl;
+        } else if (Math.abs(diff - minDiff) < 1e-9) {
+            // 同距離の場合の tie-break —
+            // ratio < 1 のときはより小さいレベル (弱い優位) を、
+            // ratio > 1 のときはより大きいレベル (強い優位) を採用する。
+            if (ratio < 1 && lvlRatio < levelToRatio(nearest)) {
+                nearest = lvl;
+            }
+            if (ratio > 1 && lvlRatio > levelToRatio(nearest)) {
+                nearest = lvl;
+            }
         }
     }
     return nearest;
 }
 
-// 三角形ファジィ数を表示用にフォーマット (レベル値表示)
+// 三角形ファジィ数を表示用にフォーマット (常に Saaty レベルを表示)
 function formatTriangularForDisplay(tfn) {
     const [l, m, u] = tfn;
-    const approxEq = (a, b) => Math.abs(a - b) < 1e-6;
-    if (approxEq(l, 1) && approxEq(m, 1) && approxEq(u, 1)) {
-        return "(5,5,5)"; // 同等
-    }
     const lLvl = ratioToNearestLevel(l);
     const mLvl = ratioToNearestLevel(m);
     const uLvl = ratioToNearestLevel(u);
@@ -271,12 +275,25 @@ modalCancelBtn.addEventListener("click", closeEditModal);
 
 modalOkBtn.addEventListener("click", () => {
     if (!editingContext) return;
-    const repVal = parseInt(repSelect.value, 10);
-    const delta = parseFloat(confSelect.value);
+    const repVal = parseInt(repSelect.value, 10); // 代表レベル (1,3,5,7,9)
+    const delta = parseFloat(confSelect.value);   // 0, 0.25, 0.5
 
-    const m = levelToRatio(repVal);
-    const l = m * (1 - delta);
-    const u = m * (1 + delta);
+    // --- TFN の生成ロジック ---
+    // 信頼度 0 → 幅 0 (rep)
+    // 信頼度 0.25 → ±2 レベル
+    // 信頼度 0.5 → ±4 レベル
+    const stepFactor = Math.round(delta / 0.25); // 0,1,2
+    const spread = stepFactor * 2;               // レベル差
+
+    // レベルを下限 1, 上限 9 に抑制
+    const lLevel = Math.max(levelOptions[0], repVal - spread);
+    const mLevel = repVal;
+    const uLevel = Math.min(levelOptions[levelOptions.length - 1], repVal + spread);
+
+    // レベル → 比率へ変換
+    const l = levelToRatio(lLevel);
+    const m = levelToRatio(mLevel);
+    const u = levelToRatio(uLevel);
     const tfn = [l, m, u];
 
     if (editingContext.type === "criteria") {

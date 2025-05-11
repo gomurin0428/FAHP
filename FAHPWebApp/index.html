@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAHP Web App</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <h1>FAHP Web 評価ツール</h1>
+    </header>
+
+    <main>
+        <section class="input-section">
+            <div class="input-block">
+                <h2>① 基準入力</h2>
+                <textarea id="criteriaInput" rows="5" placeholder="1 行に 1 つ入力してください"></textarea>
+            </div>
+            <div class="input-block">
+                <h2>② 候補入力</h2>
+                <textarea id="altInput" rows="5" placeholder="1 行に 1 つ入力してください"></textarea>
+            </div>
+            <button id="generateBtn">③ ペア比較を生成</button>
+        </section>
+
+        <section id="criteriaMatrixSection" class="matrix-section">
+            <h2>④ 基準間比較行列</h2>
+            <div id="criteriaMatrixContainer"></div>
+        </section>
+
+        <section id="altMatricesSection" class="matrix-section">
+            <h2>⑤ 候補比較 (基準ごと)</h2>
+            <div id="altMatricesContainer"></div>
+        </section>
+
+        <button id="calcBtn" class="primary">⑥ スコアを計算</button>
+
+        <section id="resultSection" class="result-section">
+            <h2>⑦ 結果</h2>
+            <div id="criteriaWeightsContainer"></div>
+            <div id="altScoresContainer"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 FAHP WebApp</p>
+    </footer>
+
+    <!-- セル編集モーダル -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>ファジィ数入力</h3>
+            <label for="repSelect">代表値</label>
+            <select id="repSelect">
+                <option value="1">1 (大きく劣る)</option>
+                <option value="3">3 (劣る)</option>
+                <option value="5" selected>5 (同等)</option>
+                <option value="7">7 (優れる)</option>
+                <option value="9">9 (大きく優れる)</option>
+            </select>
+
+            <label for="confSelect">信頼度</label>
+            <select id="confSelect">
+                <option value="0">確信している</option>
+                <option value="0.25">そこそこ確信している</option>
+                <option value="0.5">自信がない</option>
+            </select>
+
+            <div class="modal-actions">
+                <button id="modalOkBtn">OK</button>
+                <button id="modalCancelBtn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 

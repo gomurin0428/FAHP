@@ -2,7 +2,7 @@
 
 ![image](https://github.com/user-attachments/assets/bb3f9965-d438-403c-a778-0f8156e71410)
 
-[アプリ](./Docs/index.html)
+[アプリ](https://gomurin0428.github.io/FAHP/)
 
 このドキュメントは **FAHPApp**（ファジィ AHP + TOPSIS 評価ツール）の使い方を、エンドユーザー視点でまとめたものです。
 

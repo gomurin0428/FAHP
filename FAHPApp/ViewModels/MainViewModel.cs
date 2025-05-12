@@ -358,15 +358,19 @@ namespace FAHPApp.ViewModels
             // value >=1 はそのまま, <1 は逆数を計算
             if (value >= 1)
             {
-                int scaleInt = (int)Math.Round(Math.Clamp(value, 1, 9));
+                int scaleInt = (int)Math.Round(Clamp(value, 1, 9));
                 return FuzzyAHPProcessor.ToTriangular(scaleInt);
             }
             else
             {
-                int recipScale = (int)Math.Round(Math.Clamp(1 / value, 1, 9));
+                int recipScale = (int)Math.Round(Clamp(1 / value, 1, 9));
                 var baseT = FuzzyAHPProcessor.ToTriangular(recipScale);
                 return FuzzyAHPProcessor.Reciprocal(baseT);
             }
         }
+
+        // 互換: netstandard2.0 には Math.Clamp が無いので代替実装
+        private static double Clamp(double v, double min, double max) => v < min ? min : (v > max ? max : v);
+        private static int Clamp(int v, int min, int max) => v < min ? min : (v > max ? max : v);
     }
 } 

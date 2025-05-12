@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Build once for desktop (WPF) と WebAssembly (OpenSilver) を同梱 -->
+    <TargetFrameworks>net9.0-windows7.0;netstandard2.0</TargetFrameworks>
+    <!-- WPF ビルド時のみ UseWPF を true に -->
+    <UseWPF Condition="'$(TargetFramework)'=='net9.0-windows7.0'">true</UseWPF>
+    <!-- Nullable / ImplicitUsings を同じにしておく -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- C# 8.0 以上を明示 -->
+    <LangVersion>preview</LangVersion>
+    <!-- C# 最新機能用 -->
+  </PropertyGroup>
+
+  <!-- OpenSilver 側 (netstandard2.0) にのみ OpenSilver stub DLL を入れる -->
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="OpenSilver" Version="3.2.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- WPF/ブラウザ共通で利用したい Models, ViewModels をリンク参照（コピー無し） -->
+  <ItemGroup>
+    <!-- "Link" 属性で物理ファイルは FAHPApp 側のまま保持する。 -->
+    <Compile Include="..\FAHPApp\Models\**\*.cs" Link="Models\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\FAHPApp\ViewModels\**\*.cs" Link="ViewModels\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project> 

@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
-using FAHPApp.Models;
+using FAHP.Shared.Models;
 
-namespace FAHPApp.ViewModels
+namespace FAHP.Shared.ViewModels
 {
     public sealed class MainViewModel : ViewModelBase
     {
@@ -37,7 +37,7 @@ namespace FAHPApp.ViewModels
             }
         }
 
-        public ObservableCollection<ComparisonEntry> Comparisons { get; } = new();
+        public ObservableCollection<ComparisonEntry> Comparisons { get; } = new ObservableCollection<ComparisonEntry>();
         // 行列入力用 DataView（DataGrid へバインド）
         private DataView? _criteriaMatrix;
         /// <summary>
@@ -51,13 +51,13 @@ namespace FAHPApp.ViewModels
         }
 
         // UI 表示用: 基準ごとに分割したタブ コレクション
-        public ObservableCollection<CriterionTabViewModel> AlternativeComparisonTabs { get; } = new();
+        public ObservableCollection<CriterionTabViewModel> AlternativeComparisonTabs { get; } = new ObservableCollection<CriterionTabViewModel>();
 
         // 計算用に平坦なリストも保持（既存ロジックを温存）
-        public ObservableCollection<AlternativeComparisonEntry> AlternativeComparisons { get; } = new();
+        public ObservableCollection<AlternativeComparisonEntry> AlternativeComparisons { get; } = new ObservableCollection<AlternativeComparisonEntry>();
 
-        public ObservableCollection<WeightResultViewModel> Results { get; } = new();
-        public ObservableCollection<AlternativeScoreViewModel> AlternativeResults { get; } = new();
+        public ObservableCollection<WeightResultViewModel> Results { get; } = new ObservableCollection<WeightResultViewModel>();
+        public ObservableCollection<AlternativeScoreViewModel> AlternativeResults { get; } = new ObservableCollection<AlternativeScoreViewModel>();
 
         private double _criteriaConsistencyRatio;
         /// <summary>
@@ -85,7 +85,7 @@ namespace FAHPApp.ViewModels
 
         private bool CanGenerate() => !string.IsNullOrWhiteSpace(CriteriaInput) && !string.IsNullOrWhiteSpace(AlternativesInput);
 
-        private bool CanCompute() => CriteriaMatrix is not null && AlternativeComparisons.Count > 0;
+        private bool CanCompute() => CriteriaMatrix != null && AlternativeComparisons.Count > 0;
 
         private void GenerateComparisons()
         {
@@ -174,7 +174,7 @@ namespace FAHPApp.ViewModels
                 criteriaMatrix[i, i] = TriangularFuzzyNumber.One;
             }
 
-            if (CriteriaMatrix is not null)
+            if (CriteriaMatrix != null)
             {
                 var table = CriteriaMatrix.Table;
                 for (int i = 0; i < n; i++)
@@ -373,4 +373,4 @@ namespace FAHPApp.ViewModels
         private static double Clamp(double v, double min, double max) => v < min ? min : (v > max ? max : v);
         private static int Clamp(int v, int min, int max) => v < min ? min : (v > max ? max : v);
     }
-} 
+}        

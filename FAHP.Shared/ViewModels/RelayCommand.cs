@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace FAHPApp.ViewModels
+namespace FAHP.Shared.ViewModels
 {
     public sealed class RelayCommand : ICommand
     {
@@ -28,4 +28,4 @@ namespace FAHPApp.ViewModels
 
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
-} 
+}  

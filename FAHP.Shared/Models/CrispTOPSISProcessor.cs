@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace FAHPApp.Models
+namespace FAHP.Shared.Models
 {
     /// <summary>
     /// クリスプ（実数）TOPSIS 計算ユーティリティ。
@@ -25,7 +25,7 @@ namespace FAHPApp.Models
             if (weights.Length != n)
                 throw new ArgumentException("weights の長さが decisionMatrix の列数と一致していません。", nameof(weights));
 
-            if (isBenefit is not null && isBenefit.Length != n)
+            if (isBenefit != null && isBenefit.Length != n)
                 throw new ArgumentException("isBenefit の長さが decisionMatrix の列数と一致していません。", nameof(isBenefit));
 
             // 0. Benefit/Cost フラグ既定値
@@ -110,4 +110,4 @@ namespace FAHPApp.Models
             return c;
         }
     }
-} 
+}    

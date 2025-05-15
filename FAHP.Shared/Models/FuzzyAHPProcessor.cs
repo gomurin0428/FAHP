@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FAHPApp.Models
+namespace FAHP.Shared.Models
 {
     /// <summary>
     /// ファジィAHP計算ユーティリティ。
@@ -74,7 +74,7 @@ namespace FAHPApp.Models
         /// 逆数側の三角形ファジィ数を取得します。
         /// </summary>
         public static TriangularFuzzyNumber Reciprocal(in TriangularFuzzyNumber t)
-            => new(1.0 / t.U, 1.0 / t.M, 1.0 / t.L);
+            => new TriangularFuzzyNumber(1.0 / t.U, 1.0 / t.M, 1.0 / t.L);
 
         /// <summary>
         /// 基準行列と各基準ごとの候補行列から総合スコアを計算します。
@@ -214,4 +214,4 @@ namespace FAHPApp.Models
             return CrispTOPSISProcessor.CalculateScores(decisionMatrix, weights, isBenefit);
         }
     }
-} 
+}    

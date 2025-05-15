@@ -1,4 +1,4 @@
-name: Build FAHPApp
+name: Build and Test FAHPWebApp3
 
 on:
   push:
@@ -14,22 +14,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK 8.0
+      - name: Setup .NET SDK 9.0
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "9.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore FAHPApp/FAHPApp.csproj
+        run: dotnet restore FAHP.sln
 
       - name: Build (Release)
-        run: dotnet build FAHPApp/FAHPApp.csproj --configuration Release --no-restore
+        run: dotnet build FAHP.sln --configuration Release --no-restore
 
-      - name: Publish self-contained
-        run: dotnet publish FAHPApp/FAHPApp.csproj --configuration Release --no-build --output ./publish --self-contained false
+      - name: Run tests
+        run: dotnet test FAHPWebApp3.Tests/FAHPWebApp3.Tests.csproj --configuration Release --no-build
+
+      - name: Publish FAHPWebApp3.Browser
+        run: dotnet publish FAHPWebApp3/FAHPWebApp3.Browser/FAHPWebApp3.Browser.csproj --configuration Release --output ./publish
 
       - name: Upload artifact (published app)
         uses: actions/upload-artifact@v4
         with:
-          name: FAHPApp_publish
-          path: ./publish/** 
+          name: FAHPWebApp3_publish
+          path: ./publish/**   

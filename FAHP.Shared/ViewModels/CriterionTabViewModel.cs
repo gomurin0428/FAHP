@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Data;
-using FAHPApp.Models;
+using FAHP.Shared.Models;
 
-namespace FAHPApp.ViewModels
+namespace FAHP.Shared.ViewModels
 {
     /// <summary>
     /// 1 つの基準に紐づく候補比較行列を保持する ViewModel。
@@ -26,7 +26,7 @@ namespace FAHPApp.ViewModels
         public DataView AlternativeMatrix { get; }
 
         // 旧 UI 互換用 (未使用になっても既存コードへの影響を避ける)
-        public ObservableCollection<AlternativeComparisonEntry> Comparisons { get; } = new();
+        public ObservableCollection<AlternativeComparisonEntry> Comparisons { get; } = new ObservableCollection<AlternativeComparisonEntry>();
 
         /// <summary>
         /// 当該基準に対する候補間比較行列の一貫性比率 (CR)。
@@ -62,4 +62,4 @@ namespace FAHPApp.ViewModels
             return table.DefaultView;
         }
     }
-} 
+}    

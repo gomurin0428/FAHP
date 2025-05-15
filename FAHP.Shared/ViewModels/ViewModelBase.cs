@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace FAHPApp.ViewModels
+namespace FAHP.Shared.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
@@ -20,4 +20,4 @@ namespace FAHPApp.ViewModels
             return true;
         }
     }
-} 
+}  

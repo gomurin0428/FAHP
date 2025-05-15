@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using FAHPApp.ViewModels; // ViewModels は共有ライブラリ経由で参照
+using FAHP.Shared.ViewModels; // ViewModels は共有ライブラリ経由で参照
 
 namespace FAHPWebApp3
 {
